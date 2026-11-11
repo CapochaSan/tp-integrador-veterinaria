@@ -13,8 +13,6 @@ class Cliente:
             return "Todos los campos son obligatorios."
         if self.tipo_dni not in ("DNI", "LC", "LE", "CI", "PAS"):
             return "Tipo de documento inválido (usar DNI, LC, LE, CI o PAS)."
-        if not self.nro_dni.isdigit():
-            return "El número de documento debe tener solo números."
         return None
 
     def __str__(self):
