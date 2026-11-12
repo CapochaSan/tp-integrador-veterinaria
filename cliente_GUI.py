@@ -1,6 +1,3 @@
-# ---------------------------------------------------------
-# MENÚ DE CLIENTES (parte de quien hace Cliente)
-# ---------------------------------------------------------
 from cliente import Cliente
 from cliente_dao import ClienteDAO
 import flet as ft
@@ -210,7 +207,7 @@ def pantallaCliente(page: ft.Page):
     def cargar_tabla():
         """Vuelve a llenar la tabla con los clientes de la base."""
         tabla.rows = []
-        for c in dao.listar(mostrar_inactivos.value):
+        for c in dao.listar(mostrar_inactivos.value) or []:
             tabla.rows.append(ft.DataRow(cells=[
                 ft.DataCell(content=ft.Text(f"{c.tipo_dni} {c.nro_dni}")),
                 ft.DataCell(content=ft.Text(c.apellido)),
@@ -218,7 +215,7 @@ def pantallaCliente(page: ft.Page):
                 ft.DataCell(content=ft.Text(c.estado)),
                 ft.DataCell(content=boton(
                     "Editar",
-                    lambda e, t=c.tipo_dni, n=c.nro_dni: seleccionar(t, n),
+                    lambda _event, t=c.tipo_dni, n=c.nro_dni: seleccionar(t, n),
                     BOTON_TEXTO)),
             ]))
 
