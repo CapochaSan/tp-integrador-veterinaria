@@ -4,7 +4,6 @@ from typing import Optional
 
 
 class OrdenDerivacion:
-    """Entidad Orden de Derivación a Laboratorio Externo / Central."""
 
     def __init__(
         self,
@@ -13,8 +12,8 @@ class OrdenDerivacion:
         tipo_estudio: str,
         diagnostico_presuntivo: str = "",
         fecha_emision: Optional[datetime] = None,
-        id_orden: Optional[int] = None,
-    ) -> None:
+        id_orden: Optional[int] = None,) -> None:
+        
         self._id: Optional[int] = id_orden
         self.id_consulta = id_consulta
         self.id_mascota = id_mascota
@@ -22,6 +21,9 @@ class OrdenDerivacion:
         self.diagnostico_presuntivo = diagnostico_presuntivo
         self.fecha_emision = fecha_emision or datetime.now()
 
+    # Agregamos el id_mascota a pesar de no estar en el diagrama de clases para no tener que hacer JOINs en la BD 
+    # Desdoblamos observaciones en diagnostico y tipo de estudio
+    
     @property
     def id(self) -> Optional[int]:
         return self._id

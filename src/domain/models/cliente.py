@@ -12,8 +12,8 @@ class Cliente:
         dni: str,
         telefono: str = "",
         email: str = "",
-        id_cliente: Optional[int] = None,
-    ) -> None:
+        id_cliente: Optional[int] = None,) -> None:
+        
         self._id: Optional[int] = id_cliente
         self.nombre = nombre
         self.apellido = apellido

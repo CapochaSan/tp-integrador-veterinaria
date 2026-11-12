@@ -4,7 +4,6 @@ from typing import Optional, List, Tuple
 
 
 class ConsultaMedica:
-    """Entidad Consulta Médica realizada a una mascota."""
 
     def __init__(
         self,
@@ -24,6 +23,8 @@ class ConsultaMedica:
         self.diagnostico = diagnostico
         self.tratamiento = tratamiento
         self.veterinario = veterinario
+        # Normalizamos las vacunas enviadas por parametro del constructor, le sacamos los espacios si la vacuna existe dentro de  vacunas aplicadas
+        # y agregamos el or [] por si alguien manda un None
         self._vacunas_aplicadas: List[str] = [v.strip() for v in (vacunas_aplicadas or []) if v and v.strip()]
 
     @property
@@ -102,13 +103,13 @@ class ConsultaMedica:
             self._vacunas_aplicadas.append(v_limpia)
 
     def controlar_esquema_vacunas(self, vacunas_obligatorias: List[str]) -> Tuple[bool, List[str]]:
-        """
-        Evalúa si la mascota tiene su esquema al día considerando las vacunas aplicadas
-        frente al calendario obligatorio.
-        Retorna (vacunas_al_dia: bool, vacunas_pendientes: List[str]).
-        """
+        
+        # Retorna(vacunas_al_dia: bool, vacunas_pendientes: List[str]).
+        
+        # Guardamos en un conjunto las vacunas aplicadas, normalizadas sin espacios y en minuscula
         aplicadas_normalizadas = {v.strip().lower() for v in self._vacunas_aplicadas}
         pendientes: List[str] = []
+        
         for obligatoria in vacunas_obligatorias:
             if obligatoria.strip().lower() not in aplicadas_normalizadas:
                 pendientes.append(obligatoria.strip())

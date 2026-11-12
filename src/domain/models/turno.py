@@ -4,7 +4,6 @@ from typing import Optional, List
 
 
 class Turno:
-    """Entidad Turno para la atención veterinaria."""
 
     ESTADOS_VALIDOS = ("Pendiente", "Atendido", "Cancelado")
     DURACION_ESTANDAR_MINUTOS = 30
@@ -15,8 +14,12 @@ class Turno:
         veterinario: str,
         fecha_hora: datetime,
         estado: str = "Pendiente",
-        id_turno: Optional[int] = None,
-    ) -> None:
+        id_turno: Optional[int] = None,) -> None:
+        
+        # El id del turno es "Optional" para que el constructor pueda funcionar cuando creamos un objeto
+        # desde la interfaz porque aun no tiene id, cuando lo guardamos con repositorio.guardar(turno), el sqlite
+        # le asigna un id. Cuando necesitamos reconstruir el objeto desde la BD, el objeto ya tiene un id
+        
         self._id: Optional[int] = id_turno
         self.id_mascota = id_mascota
         self.veterinario = veterinario
@@ -32,11 +35,6 @@ class Turno:
         if valor is not None and valor <= 0:
             raise ValueError("El ID del turno debe ser un entero positivo.")
         self._id = valor
-
-    @property
-    def id_turno(self) -> Optional[int]:
-        """Alias para facilitar compatibilidad."""
-        return self._id
 
     @property
     def id_mascota(self) -> int:
@@ -79,10 +77,9 @@ class Turno:
         self._estado = valor
 
     def se_superpone_con(self, otro: Turno) -> bool:
-        """
-        Verifica si este turno se solapa en horario con otro turno activo
-        del mismo veterinario (considerando una ventana estándar de 30 min).
-        """
+        # Verifica si el turno se solapa con otro del mismo veterinario con 30 min de ventana
+        
+        # Si el estado de alguno de los turnos es cancelado, no hay solapamiento
         if self._estado == "Cancelado" or otro.estado == "Cancelado":
             return False
 
@@ -90,35 +87,32 @@ class Turno:
         if self._id is not None and otro.id is not None and self._id == otro.id:
             return False
 
-        # Solo hay conflicto si es el mismo profesional
+        # Verificamos los vererinarios, solo se solapa cuando es el mismo veterinario
         if self._veterinario.lower() != otro.veterinario.lower():
             return False
 
+        # El timedelta básicamente representa un intervalo de tiempo, en este caso la ventana de 30min
+        
         fin_propio = self._fecha_hora + timedelta(minutes=self.DURACION_ESTANDAR_MINUTOS)
         fin_otro = otro.fecha_hora + timedelta(minutes=self.DURACION_ESTANDAR_MINUTOS)
 
-        # Dos intervalos [inicio1, fin1) y [inicio2, fin2) se solapan si:
-        return self._fecha_hora < fin_otro and otro.fecha_hora < fin_propio
+        return (self._fecha_hora < fin_otro) and (otro.fecha_hora < fin_propio)
 
     def validar_disponibilidad(self, turnos_existentes: List[Turno]) -> None:
-        """
-        Lanza ValueError si el turno choca con alguno de los turnos ya agendados.
-        """
+        # Recorremos todos los turnos para ver si el propio se superpone con alguno
         for existente in turnos_existentes:
             if self.se_superpone_con(existente):
                 raise ValueError(
                     f"Superposición detectada: el Dr/a. {self._veterinario} ya tiene "
-                    f"un turno asignado el {existente.fecha_hora.strftime('%d/%m/%Y %H:%M')}."
-                )
+                    f"un turno asignado el {existente.fecha_hora.strftime('%d/%m/%Y %H:%M')}.")
 
+    # Cambios de estado (no tiene patron state aplicado)
     def cancelar(self) -> None:
-        """Cambia el estado a Cancelado para liberar el horario."""
         if self._estado == "Atendido":
             raise ValueError("No se puede cancelar un turno que ya fue atendido.")
         self._estado = "Cancelado"
 
     def marcar_atendido(self) -> None:
-        """Registra que el turno se concretó en una consulta."""
         if self._estado == "Cancelado":
             raise ValueError("No se puede atender un turno cancelado.")
         self._estado = "Atendido"
@@ -136,10 +130,10 @@ class Turno:
     def __eq__(self, otro: object) -> bool:
         if not isinstance(otro, Turno):
             return False
+        # Si los id son None, todavía no se guardó en la BD
         if self._id is not None and otro._id is not None:
             return self._id == otro._id
         return (
             self._id_mascota == otro._id_mascota
             and self._veterinario.lower() == otro._veterinario.lower()
-            and self._fecha_hora == otro._fecha_hora
-        )
+            and self._fecha_hora == otro._fecha_hora)

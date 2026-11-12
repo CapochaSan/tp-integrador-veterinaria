@@ -6,7 +6,6 @@ Sistema de gestión integral para atención clínica veterinaria y trazabilidad 
 
 ## 👥 Integrantes - Grupo 10
 * **Santiago Vagni** (Legajo: 90149)
-* **Gonzalo Munafó** (Legajo: 96940)
 * **María Eugenia Moreno Venturini** (Legajo: 84149)
 
 ---
@@ -14,7 +13,7 @@ Sistema de gestión integral para atención clínica veterinaria y trazabilidad 
 ## 🛠️ Stack Tecnológico
 
 * **Lenguaje:** Python 3.x
-* **Interfaz Gráfica (GUI):** [Flet](https://flet.dev/) (Flutter for Python)
+* **Interfaz Gráfica (GUI):** [Flet]
 * **Base de Datos:** SQLite3
 * **Generación de Reportes:** ReportLab (PDF)
 * **Testing Unitario:** PyTest

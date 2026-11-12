@@ -9,8 +9,6 @@ from src.domain.patterns.estrategia_facturacion import (
 
 
 class ComprobanteAtencion:
-    """Entidad Comprobante de Atención Clínica."""
-
     def __init__(
         self,
         id_consulta: int,
@@ -19,8 +17,8 @@ class ComprobanteAtencion:
         tipo_tarifa: Optional[str] = None,
         fecha: Optional[datetime] = None,
         total: Optional[float] = None,
-        id_comprobante: Optional[int] = None,
-    ) -> None:
+        id_comprobante: Optional[int] = None) -> None:
+        
         self._id: Optional[int] = id_comprobante
         self.id_consulta = id_consulta
         self.monto_base = monto_base
@@ -55,7 +53,7 @@ class ComprobanteAtencion:
     @id_consulta.setter
     def id_consulta(self, valor: int) -> None:
         if valor is None or not isinstance(valor, int) or valor <= 0:
-            raise ValueError("El comprobante debe estar vinculado a una consulta válida.")
+            raise ValueError("El comprobante debe estar vinculado a un id de consulta válida.")
         self._id_consulta = valor
 
     @property
@@ -98,7 +96,7 @@ class ComprobanteAtencion:
         return self._total
 
     def recalcular_total(self) -> float:
-        """Aplica la estrategia seleccionada sobre el monto base."""
+        # Si se cambia la estrategia, se recalcula el total
         self._total = self._estrategia.calcular_total(self._monto_base)
         return self._total
 

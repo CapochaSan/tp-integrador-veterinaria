@@ -3,25 +3,20 @@ from abc import ABC, abstractmethod
 
 
 class EstrategiaFacturacion(ABC):
-    """
-    Clase abstracta base para el Patrón Strategy que calcula el monto final
-    de un comprobante de atención clínica según la modalidad de atención.
-    """
-
+    #Clase abstracta base para el Patrón Strategy
     @property
     @abstractmethod
     def nombre(self) -> str:
-        """Nombre descriptivo de la tarifa."""
         pass
 
     @abstractmethod
     def calcular_total(self, monto_base: float) -> float:
-        """Calcula el total a facturar a partir del monto base."""
         pass
 
 
 class TarifaNormal(EstrategiaFacturacion):
-    """Tarifa para consultas programadas en horario habitual."""
+    # Clase concreta que hereda de EstrategiaFacturacion
+    # El monto de la tarifa es simplemente el monto base
 
     @property
     def nombre(self) -> str:
@@ -34,7 +29,8 @@ class TarifaNormal(EstrategiaFacturacion):
 
 
 class TarifaUrgencia(EstrategiaFacturacion):
-    """Tarifa para atenciones de urgencia o guardia (aplica 50% de recargo)."""
+    # Clase concreta que hereda de EstrategiaFacturacion
+    # Esta tarifa tiene un 50% de cargo, lo podemos configurar en la variable global de abajo
 
     RECARGO_URGENCIA = 0.50
 
@@ -50,7 +46,8 @@ class TarifaUrgencia(EstrategiaFacturacion):
 
 
 def obtener_estrategia(tipo: str) -> EstrategiaFacturacion:
-    """Factory simple para instanciar la estrategia según el nombre."""
+    # Factory para instanciar la estrategia según el nombre
+    # Quien usa el metodo, no sabe exactamente que tipo de tarifa es, lo que espera es una EstrategiaFacturación
     tipo_norm = (tipo or "").strip().lower()
     if "urg" in tipo_norm:
         return TarifaUrgencia()
