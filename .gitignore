@@ -3,4 +3,7 @@ __pycache__/
 .venv/
 venv/
 .vscode/
+.pytest_cache/
+*.db
+reportes_generados/
 Notas

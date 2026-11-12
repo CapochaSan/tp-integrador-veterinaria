@@ -1,8 +1,10 @@
+from __future__ import annotations
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, List
 
 
 class Turno:
+    """Entidad Turno para la atención veterinaria."""
 
     ESTADOS_VALIDOS = ("Pendiente", "Atendido", "Cancelado")
     DURACION_ESTANDAR_MINUTOS = 30
@@ -13,24 +15,28 @@ class Turno:
         veterinario: str,
         fecha_hora: datetime,
         estado: str = "Pendiente",
-        id_turno: Optional[int] = None,) -> None:
-        
-        self._id_turno: Optional[int] = id_turno
+        id_turno: Optional[int] = None,
+    ) -> None:
+        self._id: Optional[int] = id_turno
         self.id_mascota = id_mascota
         self.veterinario = veterinario
         self.fecha_hora = fecha_hora
         self.estado = estado
 
+    @property
+    def id(self) -> Optional[int]:
+        return self._id
+
+    @id.setter
+    def id(self, valor: Optional[int]) -> None:
+        if valor is not None and valor <= 0:
+            raise ValueError("El ID del turno debe ser un entero positivo.")
+        self._id = valor
 
     @property
     def id_turno(self) -> Optional[int]:
-        return self._id_turno
-
-    @id_turno.setter
-    def id_turno(self, valor: int) -> None:
-        if valor is not None and valor <= 0:
-            raise ValueError("El ID del turno debe ser un entero positivo.")
-        self._id_turno = valor
+        """Alias para facilitar compatibilidad."""
+        return self._id
 
     @property
     def id_mascota(self) -> int:
@@ -38,7 +44,7 @@ class Turno:
 
     @id_mascota.setter
     def id_mascota(self, valor: int) -> None:
-        if valor is None or valor <= 0:
+        if valor is None or not isinstance(valor, int) or valor <= 0:
             raise ValueError("El turno debe estar asociado a una mascota válida.")
         self._id_mascota = valor
 
@@ -72,18 +78,16 @@ class Turno:
             raise ValueError(f"Estado inválido. Debe ser uno de: {self.ESTADOS_VALIDOS}")
         self._estado = valor
 
-
-    def se_superpone_con(self, otro: "Turno") -> bool:
+    def se_superpone_con(self, otro: Turno) -> bool:
         """
-        Verifica si este turno se pisa en horario con otro turno activo
+        Verifica si este turno se solapa en horario con otro turno activo
         del mismo veterinario (considerando una ventana estándar de 30 min).
         """
-        # Los turnos cancelados liberan la agenda
         if self._estado == "Cancelado" or otro.estado == "Cancelado":
             return False
 
-        # Si es el mismo turno (ej. al editar), no cuenta como superposición
-        if self._id_turno is not None and self._id_turno == otro.id_turno:
+        # Si es el mismo turno (ej. al editarse), no hay superposición consigo mismo
+        if self._id is not None and otro.id is not None and self._id == otro.id:
             return False
 
         # Solo hay conflicto si es el mismo profesional
@@ -96,10 +100,9 @@ class Turno:
         # Dos intervalos [inicio1, fin1) y [inicio2, fin2) se solapan si:
         return self._fecha_hora < fin_otro and otro.fecha_hora < fin_propio
 
-    def validar_disponibilidad(self, turnos_existentes: list["Turno"]) -> None:
+    def validar_disponibilidad(self, turnos_existentes: List[Turno]) -> None:
         """
-        Lanza un ValueError si el turno choca con alguno de la lista existente.
-        Ideal para llamar desde el servicio antes de guardar en SQLite.
+        Lanza ValueError si el turno choca con alguno de los turnos ya agendados.
         """
         for existente in turnos_existentes:
             if self.se_superpone_con(existente):
@@ -120,19 +123,21 @@ class Turno:
             raise ValueError("No se puede atender un turno cancelado.")
         self._estado = "Atendido"
 
-
     def __str__(self) -> str:
         return (
-            f"Turno(ID: {self._id_turno}, Mascota ID: {self._id_mascota}, "
+            f"Turno(ID: {self._id}, Mascota ID: {self._id_mascota}, "
             f"Vet: {self._veterinario}, Fecha: {self._fecha_hora.strftime('%d/%m/%Y %H:%M')}, "
             f"Estado: {self._estado})"
         )
 
+    def __repr__(self) -> str:
+        return self.__str__()
+
     def __eq__(self, otro: object) -> bool:
         if not isinstance(otro, Turno):
             return False
-        if self._id_turno is not None and otro._id_turno is not None:
-            return self._id_turno == otro._id_turno
+        if self._id is not None and otro._id is not None:
+            return self._id == otro._id
         return (
             self._id_mascota == otro._id_mascota
             and self._veterinario.lower() == otro._veterinario.lower()
