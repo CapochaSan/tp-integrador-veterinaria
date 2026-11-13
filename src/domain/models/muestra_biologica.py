@@ -11,11 +11,7 @@ from src.domain.patterns.estado_muestra import (
 
 
 class MuestraBiologica:
-    """
-    Entidad Muestra Biológica con ciclo de vida administrado por el Patrón State
-    y registro de trazabilidad inmutable con timestamps.
-    """
-
+ 
     def __init__(
         self,
         id_orden: int,
@@ -117,7 +113,7 @@ class MuestraBiologica:
 
     @property
     def historial_trazabilidad(self) -> Tuple[str, ...]:
-        """Retorna una tupla inmutable con el historial de eventos."""
+        # Retorna una tupla con el historial de eventos.
         return tuple(self._historial_trazabilidad)
 
     @property
@@ -149,10 +145,10 @@ class MuestraBiologica:
         return self._motivo_rechazo
 
     def _cambiar_estado(self, nuevo_estado: EstadoMuestra, detalle: str) -> None:
-        """
-        Método interno invocado por las clases de EstadoMuestra para realizar
-        la transición de estado y registrar la entrada inmutable en el log.
-        """
+        
+        # Método interno invocado por las clases de EstadoMuestra para realizar
+        # la transición de estado y registrar la entrada en el log.
+        
         ahora = datetime.now()
         self._estado = nuevo_estado
 
@@ -163,9 +159,9 @@ class MuestraBiologica:
 
         ts = ahora.strftime("%Y-%m-%d %H:%M:%S")
         self._historial_trazabilidad.append(
-            f"[{ts}] Estado -> {nuevo_estado.nombre}: {detalle}"
-        )
+            f"[{ts}] Estado -> {nuevo_estado.nombre}: {detalle}")
 
+    # Todos estos métodos delegan comportamiento a las clases estado (Patron state)
     def empaquetar(self, id_remito: Optional[int] = None) -> None:
         if id_remito is not None:
             self.id_remito = id_remito
@@ -184,7 +180,7 @@ class MuestraBiologica:
         self._estado.rechazar(self, motivo)
 
     def obtener_log_texto(self) -> str:
-        """Devuelve el log completo de trazabilidad en formato texto multilínea."""
+        # devuelve el log de trazabilidad en un formato multilinea
         return "\n".join(self._historial_trazabilidad)
 
     def __str__(self) -> str:

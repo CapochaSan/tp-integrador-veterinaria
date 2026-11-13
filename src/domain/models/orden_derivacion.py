@@ -21,7 +21,8 @@ class OrdenDerivacion:
         self.diagnostico_presuntivo = diagnostico_presuntivo
         self.fecha_emision = fecha_emision or datetime.now()
 
-    # Agregamos el id_mascota a pesar de no estar en el diagrama de clases para no tener que hacer JOINs en la BD 
+    # Agregamos el id_mascota a pesar de no estar (originalmente - luego lo agregamos) 
+    # en el diagrama de clases para no tener que hacer JOINs en la BD 
     # Desdoblamos observaciones en diagnostico y tipo de estudio
     
     @property

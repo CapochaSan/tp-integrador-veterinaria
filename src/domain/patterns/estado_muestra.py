@@ -7,17 +7,16 @@ if TYPE_CHECKING:
 
 
 class EstadoMuestra(ABC):
-    """
-    Clase abstracta base para el Patrón State que modela el ciclo de vida
-    de una muestra biológica.
-    """
-
+    
+    # Clase abstracta base para el Patrón State que modela el ciclo de vida
+    # de una muestra biológica.
+    
     @property
     @abstractmethod
     def nombre(self) -> str:
-        """Nombre legible del estado actual."""
         pass
-
+    
+    # Los métodos por defecto devuelven None y dan error, cada clase concreta sobreescribe el método que utiliza
     def empaquetar(self, muestra: MuestraBiologica) -> None:
         raise ValueError(f"No se puede empaquetar una muestra en estado '{self.nombre}'.")
 
@@ -45,7 +44,7 @@ class EstadoMuestra(ABC):
 
     @staticmethod
     def desde_nombre(nombre: str) -> "EstadoMuestra":
-        """Factory para reconstruir el estado a partir de su nombre persistido."""
+        # Factory para reconstruir el estado a partir de su nombre persistido.
         nombre_normalizado = (nombre or "").strip().lower()
         if "extra" in nombre_normalizado:
             return EstadoExtraida()
@@ -63,7 +62,7 @@ class EstadoMuestra(ABC):
 
 
 class EstadoExtraida(EstadoMuestra):
-    """Estado inicial: la muestra fue tomada al paciente en la clínica."""
+    # Estado inicial: muestra tomada al paciente en la clínica.
 
     @property
     def nombre(self) -> str:
@@ -74,7 +73,7 @@ class EstadoExtraida(EstadoMuestra):
 
 
 class EstadoEmpaquetada(EstadoMuestra):
-    """La muestra está guardada en la conservadora con precinto asignado."""
+    # La muestra está guardada en la conservadora con precinto asignado.
 
     @property
     def nombre(self) -> str:
@@ -85,7 +84,7 @@ class EstadoEmpaquetada(EstadoMuestra):
 
 
 class EstadoEnTransito(EstadoMuestra):
-    """La muestra se encuentra en viaje hacia el laboratorio central."""
+    # La muestra se encuentra en viaje hacia el laboratorio central.
 
     @property
     def nombre(self) -> str:
@@ -103,7 +102,7 @@ class EstadoEnTransito(EstadoMuestra):
 
 
 class EstadoRecibida(EstadoMuestra):
-    """La muestra ingresó al laboratorio y está lista para su procesamiento."""
+    # La muestra ingresó al laboratorio y está lista para su procesamiento.
 
     @property
     def nombre(self) -> str:
@@ -123,7 +122,7 @@ class EstadoRecibida(EstadoMuestra):
 
 
 class EstadoAnalizada(EstadoMuestra):
-    """Estado final: la muestra fue analizada con resultados disponibles."""
+    # Estado final: la muestra fue analizada con resultados disponibles.
 
     @property
     def nombre(self) -> str:
@@ -131,7 +130,7 @@ class EstadoAnalizada(EstadoMuestra):
 
 
 class EstadoRechazada(EstadoMuestra):
-    """Estado final: la muestra fue rechazada (análisis bloqueado permanentemente)."""
+    # Estado final: la muestra fue rechazada (análisis bloqueado permanentemente).
 
     @property
     def nombre(self) -> str:

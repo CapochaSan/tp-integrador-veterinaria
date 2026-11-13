@@ -3,8 +3,6 @@ from typing import Optional
 
 
 class Mascota:
-    """Entidad Mascota (Paciente de la clínica)."""
-
     ESPECIES_VALIDAS = ("Canino", "Felino", "Ave", "Otro")
 
     def __init__(

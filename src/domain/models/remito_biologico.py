@@ -4,8 +4,7 @@ from typing import Optional
 
 
 class RemitoBiologico:
-    """Entidad Remito Biológico para envío en cadena de frío."""
-
+    
     ESTADOS_VALIDOS = ("Generado", "En Tránsito", "Entregado")
 
     def __init__(
@@ -18,8 +17,8 @@ class RemitoBiologico:
         responsable_envio: str = "",
         responsable_recepcion: Optional[str] = None,
         estado: str = "Generado",
-        id_remito: Optional[int] = None,
-    ) -> None:
+        id_remito: Optional[int] = None,) -> None:
+        
         self._id: Optional[int] = id_remito
         self.codigo_remito = codigo_remito
         self.codigo_conservadora = codigo_conservadora
