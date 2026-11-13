@@ -19,7 +19,7 @@ from src.domain.interfaces.repositorios import (
 
 
 class ClinicaService:
-    """Servicio de aplicación para la gestión clínica: Clientes, Mascotas, Turnos, Consultas y Facturación."""
+    # Servicio de aplicación para la gestión clínica: Clientes, Mascotas, Turnos, Consultas y Facturación.
 
     def __init__(
         self,
@@ -36,9 +36,7 @@ class ClinicaService:
         self._comprobante_repo = comprobante_repo
 
     # --- CLIENTES ---
-    def registrar_cliente(
-        self, nombre: str, apellido: str, dni: str, telefono: str = "", email: str = ""
-    ) -> Cliente:
+    def registrar_cliente(self, nombre: str, apellido: str, dni: str, telefono: str = "", email: str = "") -> Cliente:
         cliente = Cliente(nombre=nombre, apellido=apellido, dni=dni, telefono=telefono, email=email)
         return self._cliente_repo.guardar(cliente)
 
@@ -56,8 +54,8 @@ class ClinicaService:
         especie: str = "Canino",
         raza: str = "Mestizo",
         edad: int = 1,
-        peso: float = 0.0,
-    ) -> Mascota:
+        peso: float = 0.0,) -> Mascota:
+        
         cliente = self._cliente_repo.obtener_por_id(id_cliente)
         if cliente is None:
             raise ValueError(f"No existe un cliente registrado con ID {id_cliente}.")
@@ -101,14 +99,15 @@ class ClinicaService:
 
     # --- CONSULTAS Y FACTURACIÓN ---
     def obtener_esquema_vacunas_mascota(self, id_mascota: int) -> Tuple[bool, List[str], List[str]]:
-        """
-        Evalúa todas las vacunas aplicadas históricamente a una mascota frente al esquema obligatorio.
-        Retorna (vacunas_al_dia, vacunas_aplicadas_historicas, vacunas_pendientes).
-        """
+        
+        # Evalúa todas las vacunas aplicadas a una mascota con respecto al esquema obligatorio.
+        # Retorna (vacunas_al_dia, vacunas_aplicadas_historicas, vacunas_pendientes).
+        
         mascota = self._mascota_repo.obtener_por_id(id_mascota)
         if mascota is None:
             raise ValueError(f"No existe una mascota con ID {id_mascota}.")
 
+        # busca la especie de la mascota, si no hay, busca por defecto los generales
         obligatorias = VACUNAS_OBLIGATORIAS.get(mascota.especie, VACUNAS_OBLIGATORIAS["General"])
         consultas = self._consulta_repo.listar_por_mascota(id_mascota)
 
@@ -135,8 +134,8 @@ class ClinicaService:
         monto_base: float = 0.0,
         tipo_tarifa: str = "Normal",
         id_turno: Optional[int] = None,
-        fecha_hora: Optional[datetime] = None,
-    ) -> Dict[str, Any]:
+        fecha_hora: Optional[datetime] = None,) -> Dict[str, Any]:
+        
         mascota = self._mascota_repo.obtener_por_id(id_mascota)
         if mascota is None:
             raise ValueError(f"No existe una mascota registrada con ID {id_mascota}.")

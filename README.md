@@ -1,57 +1,62 @@
 # Red de Clínicas Veterinarias & Derivación de Laboratorio 🐾🧪
 
-Sistema de gestión integral para atención clínica veterinaria y trazabilidad inmutable en la derivación de muestras biológicas al laboratorio central, desarrollado para la asignatura *Desarrollo de Aplicaciones con Objetos* (2026).
+Sistema de gestión integral para atención clínica veterinaria, control de turnos, facturación dinámica y trazabilidad inmutable en la derivación de muestras biológicas hacia el laboratorio central. Desarrollado para la asignatura **Desarrollo de Aplicaciones con Objetos (DAO) — UTN FRC (2026)**.
 
 ---
 
-## 👥 Integrantes - Grupo 10
-* **Santiago Vagni** (Legajo: 90149)
-* **María Eugenia Moreno Venturini** (Legajo: 84149)
+## 👥 Integrantes — Grupo 10
+
+- **Santiago Vagni** — Legajo: `90149`
+- **María Eugenia Moreno Venturini** — Legajo: `84149`
 
 ---
 
 ## 🛠️ Stack Tecnológico
 
-* **Lenguaje:** Python 3.x
-* **Interfaz Gráfica (GUI):** [Flet]
-* **Base de Datos:** SQLite3
-* **Generación de Reportes:** ReportLab (PDF)
-* **Testing Unitario:** PyTest
-* **Control de Versiones:** Git & GitHub
+- **Lenguaje:** Python 3.x
+- **Interfaz Gráfica (GUI):** Flet
+- **Base de Datos:** SQLite3 (con integridad referencial activa y *seeding* inicial)
+- **Generación de Reportes:** ReportLab (PDF)
+- **Testing Unitario e Integración:** PyTest
+- **Control de Versiones:** Git & GitHub
 
 ---
 
 ## ⚙️ Arquitectura del Proyecto
 
-El sistema está diseñado bajo una **Arquitectura en Capas** aplicando el principio de **Inversión de Dependencias (DIP)** para desacoplar el dominio de la infraestructura (persistencia y GUI).
+El sistema implementa una **Arquitectura en Capas** aplicando **Inversión de Dependencias (DIP)**: la capa de dominio define contratos abstractos (`ABC`) y contiene todas las reglas de negocio, permaneciendo completamente desacoplada de SQLite, ReportLab y Flet.
 
 ```text
 tp_integrador_veterinaria/
-├── main.py                     # Punto de entrada de la aplicación
-├── config.py                   # Configuraciones globales
-├── requirements.txt            # Dependencias del proyecto
-├── README.md                   # Presentación del proyecto
+├── main.py                         # Punto de entrada de la aplicación (Flet)
+├── config.py                       # Configuraciones globales (rutas de BD y PDFs)
+├── requeriments.txt                # Dependencias del proyecto
+├── README.md                       # Documentación técnica del proyecto
+├── reportes_generados/             # Salida de comprobantes y reportes analíticos en PDF
 │
 ├── src/
-│   ├── domain/                 # LÓGICA DE NEGOCIO Y DOMINIO
-│   │   ├── models/             # Entidades principales (Cliente, Mascota, Muestra, etc.)
-│   │   ├── services/           # Casos de uso y reglas de negocio
-│   │   └── interfaces/         # Contratos/Abstracciones (Repositories Interfaces)
+│   ├── domain/                     # CAPA DE DOMINIO Y LÓGICA DE NEGOCIO
+│   │   ├── interfaces/             # Contratos abstractos de repositorios (ABC)
+│   │   ├── models/                 # 8 Entidades principales del dominio
+│   │   ├── patterns/               # Implementación de State, Strategy y Factories
+│   │   └── services/               # Casos de uso (ClinicaService, LaboratorioService)
 │   │
-│   ├── infrastructure/         # PERSISTENCIA Y ADAPTADORES EXTERNOS
-│   │   ├── database/           # Conexión y scripts de SQLite
-│   │   ├── repositories/       # Implementación concreta de repositorios
-│   │   └── reports/            # Generación de comprobantes y reportes en PDF (ReportLab)
+│   ├── infrastructure/             # CAPA DE INFRAESTRUCTURA Y ADAPTADORES
+│   │   ├── database/               # DBManager (conexión SQLite3, DDL y carga semilla)
+│   │   ├── repositories/           # Repositorios concretos sobre SQLite3
+│   │   └── reports/                # GeneradorPDF con ReportLab
 │   │
-│   └── ui/                     # CAPA DE PRESENTACIÓN (FLET)
-│       ├── components/         # Componentes visuales reutilizables
-│       └── views/              # Vistas/Pantallas según proceso de negocio
+│   └── ui/                         # CAPA DE PRESENTACIÓN (FLET)
+│       ├── components/             # Componentes visuales reutilizables
+│       └── views/                  # Vistas del flujo clínico, laboratorio y reportes
 │
-└── tests/                      # PRUEBAS UNITARIAS (PyTest)
-    ├── test_muestra_estado.py
-    └── test_cliente_mascota.py
+└── tests/                          # SUITE DE PRUEBAS AUTOMATIZADAS (PyTest)
+    ├── conftest.py                 # Fixtures de base de datos en memoria/temporal
+    ├── test_turnos.py              # Validación de superposición horaria
+    ├── test_facturacion.py         # Pruebas del patrón Strategy y liquidación
+    ├── test_muestra_state.py       # Transiciones de estado y rechazo por precinto roto
+    └── test_integracion_flujo.py   # Prueba de extremo a extremo (Clínica -> Laboratorio)
 ```
-
 ---
 
 ## 📌 Procesos de Negocio & Trazabilidad

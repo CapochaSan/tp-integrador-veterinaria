@@ -15,7 +15,7 @@ from src.domain.interfaces.repositorios import (
 
 
 class LaboratorioService:
-    """Servicio de aplicación para la gestión de derivaciones, remitos y muestras biológicas."""
+    # Servicio de aplicación para la gestión de derivaciones, remitos y muestras biológicas.
 
     def __init__(
         self,
@@ -23,8 +23,7 @@ class LaboratorioService:
         remito_repo: IRemitoBiologicoRepositorio,
         muestra_repo: IMuestraBiologicaRepositorio,
         consulta_repo: IConsultaMedicaRepositorio,
-        mascota_repo: IMascotaRepositorio,
-    ) -> None:
+        mascota_repo: IMascotaRepositorio, ) -> None:
         self._orden_repo = orden_repo
         self._remito_repo = remito_repo
         self._muestra_repo = muestra_repo
@@ -38,8 +37,7 @@ class LaboratorioService:
         tipo_estudio: str,
         diagnostico_presuntivo: str,
         tipo_muestra: str,
-        codigo_precinto: str,
-    ) -> Tuple[OrdenDerivacion, MuestraBiologica]:
+        codigo_precinto: str,) -> Tuple[OrdenDerivacion, MuestraBiologica]:
         if self._consulta_repo.obtener_por_id(id_consulta) is None:
             raise ValueError(f"No existe la consulta médica ID {id_consulta}.")
         if self._mascota_repo.obtener_por_id(id_mascota) is None:
@@ -67,8 +65,7 @@ class LaboratorioService:
         codigo_remito: str,
         codigo_conservadora: str,
         temperatura_transporte: float = 4.0,
-        responsable_envio: str = "Veterinario Clínica",
-    ) -> RemitoBiologico:
+        responsable_envio: str = "Veterinario Clínica",) -> RemitoBiologico:
         if not ids_muestras:
             raise ValueError("Debe seleccionar al menos una muestra para empaquetar.")
 
@@ -115,8 +112,7 @@ class LaboratorioService:
         return remito
 
     def recibir_muestra(
-        self, id_muestra: int, precinto_roto: bool, responsable_recepcion: str = "Técnico Lab"
-    ) -> MuestraBiologica:
+        self, id_muestra: int, precinto_roto: bool, responsable_recepcion: str = "Técnico Lab") -> MuestraBiologica:
         muestra = self._muestra_repo.obtener_por_id(id_muestra)
         if muestra is None:
             raise ValueError(f"No existe la muestra ID {id_muestra}.")
@@ -128,10 +124,11 @@ class LaboratorioService:
             remito = self._remito_repo.obtener_por_id(muestra.id_remito)
             if remito is not None and remito.estado == "En Tránsito":
                 muestras_remito = self._muestra_repo.listar_por_remito(remito.id)
-                todas_recibidas = all(
-                    mr.nombre_estado in ("Recibida", "Rechazada", "Analizada")
-                    for mr in muestras_remito
-                )
+                
+                # básicamente recorremos todas las muestras del remito y nos fijamos si están en algún estado
+                # posterior a "En tránsito", luego con all verificamos si todas cumplen con esa condicion y devuelve
+                # un boolean que se almacena en todas_recibidas
+                todas_recibidas = all(mr.nombre_estado in ("Recibida", "Rechazada", "Analizada") for mr in muestras_remito)
                 if todas_recibidas:
                     remito.recibir(responsable=responsable_recepcion)
                     self._remito_repo.actualizar(remito)

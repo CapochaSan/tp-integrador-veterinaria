@@ -5,7 +5,6 @@ from src.ui.helpers import mostrar_mensaje
 
 
 class ClientesMascotasView(ft.Container):
-    """Vista minimalista para gestionar Clientes y Mascotas."""
 
     def __init__(self, page: ft.Page, clinica_service: ClinicaService) -> None:
         super().__init__(padding=15, expand=True)
